@@ -14,8 +14,8 @@
     "ShellCmds": [
         ". $MODULESHOME/init/bash",
         "module purge",
-        "module use --append /swbuild/LAVA/LAVA_GROUP/LAVA_modules",
-        "module load LAVA/dev",
+        "module use --append /swbuild/LAVA/LAVA_modules",
+        "module load LAVA/v1.1.0",
         "module load python3/3.11.5",
         "module load cape/devel"
     ],
