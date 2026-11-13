@@ -1,0 +1,13 @@
+
+# Temp files
+*~
+~*
+*#
+*.asv
+*.swp
+
+# Working folder
+work
+dfly*
+cfd_static
+
