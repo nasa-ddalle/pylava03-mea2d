@@ -14,10 +14,9 @@ fwork = os.path.join(fdir, "work")
 # Files list
 fnames = [
     "pyLava.json",
-    "run.inputs",
-    "genesisCapsuleCoarse.fro",
-    "n2.spec",
-    "schedule.dat",
+    "inputs/unst_mea2d.inputs",
+    "inputs/mesh/voro_mea2d.yaml",
+    "inputs/mesh/crmhl-2dcut-triangulation.cgns",
     "matrix.csv",
     "report/NASA_logo.pdf",
 ]
