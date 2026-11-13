@@ -1,0 +1,119 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#------MESH PARAMETERS-----#
+#length scale
+#reference_length: 0.5e-3
+reference_length: 1e-5
+
+# 2d or 3d mesh
+2d: true
+
+2d_plane_output:
+  - active: false
+    triangulate: false
+    normalVector: [0, 0, 1.0]
+    pointInPlane: [0.2,0.0,0.122]
+#~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#------POINT CLOUD PARAMETERS-----#
+# if reading point cloud from a csv file specify true
+read_points_from_file: false
+
+# point cloud csv file name
+# You may specify *.csv file type or as *.bin file type which are produced by the point cloud export functionality.
+point_cloud_file: smoothed_final.csv
+
+# when saving the unsmoothed point cloud and the final smoothed point cloud, you may specify the file format
+# which is saved to the file system. If this variable is not set as "csv" or "bin" then we default to csv.
+point_cloud_export_type: csv
+#point_cloud_export_type: bin
+#
+
+#near_wall_cell_type: isotropic
+near_wall_cell_type: anisotropic
+
+num_wall_pnt_lloyd_iters: 10
+
+max_ray_angle: 10
+
+merge_restricted_triangles_in_final_mesh: true
+
+# if marking wall points and smoothing points specify true
+# User may want to specify false if a smoothed point cloud which was previously labeled is used.
+do_pointCloud_labeling: true
+
+# total number of lloyd iterations
+lloyd_iter: 10
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#------PARTITION PARAMETERS-----#
+#number of partitions used while generating the mesh
+num_partitions: 1
+
+#specify true if user wants to restart from a previously defined partition.
+read_partition_from_file: false
+
+#partition point cloud file name
+partitionPCfile: partitionPC.csv
+
+#do lloyd smoothing without recomputing true local graph for N iterations, then recompute it
+recompute_local_graph_every: 1
+
+#convergence criterion for load balancing
+load_balancing_rms_threshold: 0.05
+
+#blending between CVT and VP algorithms in load balacing 
+load_balancing_blending: 0.8
+
+#max number of iterations in load balancing if convergence is not met
+load_balancing_max_iter: 2000
+
+#distance multiplier when trying to find ghost cells.
+#value needs to be >= 1.
+#An increased value means more ghosts but also means more safety with respect to the connectivity of ghost split cells.
+dist_coeff: 1.5
+
+#specify true if user wants to check if all faces have neighbors.
+face_connectivity_check: false
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#------OUTPUT PARAMETERS-----#
+# Specify if scalars have to be written into the
+# CGNS mesh
+write_cgns_scalars: false
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
+regions:
+  # First, specify the container.
+  # Container layers are zero by default
+  # and angles do not work for containers
+  - name: container
+    type: cube
+    distance: [1000, 1000, 1.e-3]
+    seed: hexprism
+    spacing_rel: [1e8, 1e8, 1e8]
+    center: [0.5, 0.0, 0.5]
+
+  - name: Multi_element_airfoil
+    type: wall
+    smoothing_layers: 3
+    project_layers: 2
+    tangential_plane_pert_factor: 0.1
+    seed_toward_normal: true
+    trifile: crmhl-2dcut-triangulation.cgns
+    face_merge_angle: 30
+
+    refinements:
+      - name: xfine
+        seed: hexprism
+        smoothing_layers: 2
+        initial_wall_normal_spacing_rel: 1
+        wall_normal_spacing_growth_rate: 1.25
+        level_points_per_thickness: 8
+        level_spacing_inner_rel: 100
+        level_spacing_outer_rel: 1e8
+        level_spacing_growth_rate: 1.25
+        components: 1,2,4

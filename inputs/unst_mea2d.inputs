@@ -1,0 +1,125 @@
+// *************************************************************
+// 2D Bump case from the Langley turbulence modeling site
+// https://turbmodels.larc.nasa.gov/bump_grids.html
+// *************************************************************
+
+fluid {
+  species = air_perfect
+}
+
+reference conditions {
+  mach        = 0.2
+  Re          = 5e6
+  alpha       = 16.
+  temperature = 272.1
+  beta        = 0.
+  length      = 1.
+  area        = 1.e-3
+}
+
+unst {
+  grid {
+    file                  = voro_mea2d.cgns
+    transform_1 {function = rotate; center = [0, 0, 0]; axis = [1, 0, 0]; angle = 90}
+  }
+
+  convergence {
+    relative tolerance = 1.e-7
+  }
+
+  implicit {
+    number of steps   = 2000
+    jacobian method   = numerical
+    jacobian interval = 1
+    adaptive {
+      min cfl            = 1.
+      max cfl            = 200.
+      max cfl turbulence = 200.
+    }
+  }
+
+  convective terms {
+    order         = 2
+    limiter       = none
+    flux function = ausmpw+
+  }
+
+  navierstokes {
+    viscous            = true
+    maximum iterations = 40
+    minimum density    = 0.1
+  }
+
+  turbulence {
+    model              = sa
+    maximum iterations = 40
+  }
+
+  output {
+
+    monitor {
+      variables = [ns, l2resr0, l2turbresr0, cfl, maxmach, cl_all, linits, linres, cfltur, linitsturb, linresturb, wallt, mups]
+    }
+
+    volume {
+      format    = cgns
+      interval  = 2000
+      variables = [q, density, mach, eddyviscosity, viscosity, residuals]
+    }
+
+    restart {
+      interval = 20000
+    }
+
+    surface {
+      interval  = 500
+      variables = [q, mach, eddyviscosity, tauw, pcoef, cf, yplus]
+    }
+
+    loads {
+      interval      = 1
+      moment center = [0.25, 0., 0.]
+      normalize     = true
+      gauge         = true;
+
+      group_1 {
+        name    = all
+        include = [1, 2, 3]
+      }
+      group_2 {
+        name    = slat
+        include = [1]
+      }
+      group_3 {
+        name    = main
+        include = [2]
+      }
+      group_4 {
+        name    = flap
+        include = [3]
+      }
+    }
+
+  }
+
+  # BC_1 : slat
+  # BC_2 : main
+  # BC_3 : flap
+  # BC_4 : zMin
+  # BC_5 : yMin
+  # BC_6 : xMin
+  # BC_7 : yMax
+  # BC_8 : xMax
+  # BC_9 : zMax
+
+  BC_1 {type = wall}
+  BC_2 {type = wall}
+  BC_3 {type = wall}
+  BC_4 {type = symmetry}
+  BC_5 {type = farfield}
+  BC_6 {type = farfield}
+  BC_7 {type = farfield}
+  BC_8 {type = farfield}
+  BC_9 {type = symmetry}
+
+}
