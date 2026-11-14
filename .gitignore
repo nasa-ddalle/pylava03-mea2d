@@ -11,3 +11,22 @@ work
 dfly*
 cfd_static
 log
+
+# Mesher outputs (inputs/mesh)
+inputs/mesh/*_localCompID.csv
+inputs/mesh/anisotropic_seeds_*.csv
+inputs/mesh/smoothed_*.csv
+inputs/mesh/unsmoothed*.csv
+inputs/mesh/voro_mea2d*.cgns
+inputs/mesh/mesh_quality_metrics.json
+inputs/mesh/worst_gauss.obj
+inputs/mesh/lout.0
+inputs/mesh/performance/
+inputs/mesh/*.o[0-9]*
+
+# CAPE case folders, databook, and report products
+mea2d-lava01/
+data/
+report/report-*.pdf
+report/texput.log
+work-probe/

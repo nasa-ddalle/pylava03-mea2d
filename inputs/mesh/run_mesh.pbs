@@ -1,0 +1,30 @@
+#!/bin/bash
+# PBS script to generate the volume mesh (voro_mea2d.cgns) for the
+# multielement-airfoil tutorial on a Pleiades Rome (rom_ait) node.
+# Matches the resources of `iqsub rom`. Submit, e.g., from a Pleiades
+# front end:
+#     cd inputs/mesh
+#     qsub run_mesh.pbs
+#PBS -S /bin/bash
+#PBS -N voro_mea2d
+#PBS -r y
+#PBS -j oe
+#PBS -l select=1:ncpus=128:mpiprocs=128:model=rom_ait
+#PBS -l walltime=2:00:00
+#PBS -W group_list=e0847
+#PBS -q sls_aero1
+
+# Go to the folder containing voro_mea2d.yml
+cd /nobackupp17/ddalle/cape/example/pylava03-mea2d/inputs/mesh
+
+# Set up LAVA and the Voronoi mesher
+. $MODULESHOME/init/bash
+module purge
+module use --append /swbuild/LAVA/LAVA_modules
+module load LAVA/v1.1.0
+module load LAVA_voro/v1.1.0
+module load python3/3.11.5
+
+# Run the mesher (OpenMP); executable name is architecture-specific
+export OMP_NUM_THREADS=32
+lavavoro.AVX2 ./voro_mea2d.yml

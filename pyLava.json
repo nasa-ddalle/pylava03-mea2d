@@ -4,11 +4,23 @@
         "r": "n",
         "S": "/bin/bash",
         "select": 1,
-        "ncpus": 64,
-        "mpiprocs": 2,
+        "ncpus": 128,
+        "mpiprocs": 128,
         "model": "rom_ait",
-        "q": "normal",
-        "walltime": "2:00:00"
+        "W": "group_list=e0847",
+        "q": "sls_aero1",
+        "walltime": "8:00:00",
+        // PBS executables are not on the non-interactive PATH of the
+        // SSH target host, so give their location explicitly
+        "PBSPrefix": "/PBS/bin"
+    },
+
+    // Route qsub/qstat/qdel through SSH when the local host is not a
+    // Pleiades front end (e.g. running from Cabeus hosts). Hostname keys
+    // are regular expressions matched against the local host; values are
+    // the final PBS host, optionally preceded by SSH jump hosts.
+    "JumpHosts": {
+        "cb.+": ["cfe02", "pfe25"]
     },
 
     "ShellCmds": [
@@ -17,7 +29,8 @@
         "module use --append /swbuild/LAVA/LAVA_modules",
         "module load LAVA/v1.1.0",
         "module load python3/3.11.5",
-        "module load cape/devel"
+        "module use -a /home5/ddalle/share/modulefiles",
+        "module load cape/testing"
     ],
 
     "CartInputFile": "inputs/unst_mea2d.inputs",
@@ -45,20 +58,23 @@
         "PhaseIters": [2000],
         "PhaseSequence": [0],
         // Mode control
-        "qsub": false,
+        "qsub": true,
         "MPI": true,
         "nProc": 2,
         // Threading (this tutorial: 2 MPI ranks x 32 OpenMP threads)
         "Environ": {
             "OMP_NUM_THREADS": 32
         },
-        // MPI launcher
+        // MPI launcher. Do not let OpenMPI bind each rank to one core;
+        // the 32 OpenMP threads of each rank must be free to spread out
         "mpi": {
-            "executable": "mpirun"
+            "executable": "mpirun",
+            "args": ["--bind-to", "none"]
         },
-        // LAVA-Unstructured executable (name depends on architecture)
+        // LAVA-Unstructured executable (name depends on architecture;
+        // Rome nodes are AVX2)
         "lavaunst": {
-            "executable": "lavaunst.3D.NS1"
+            "executable": "lavaunst.3D.NS1.AVX2"
         }
     },
 
@@ -74,8 +90,11 @@
             "main",
             "flap"
         ],
-        "nStats": 500,
-        "nMin": 500,
+        // The LAVA solver exits on its own convergence tolerance near
+        // iteration 1000, so the nMin+nStats threshold must stay below
+        // that. Loads are flat by iteration ~200.
+        "nStats": 400,
+        "nMin": 400,
         "Folder": "data"
     },
 

@@ -27,6 +27,11 @@ main CAPE file is `pyLava.json`. The basic flow is:
    creates `voro_mea2d.cgns`, which is what each case's `run.inputs`
    references via the symlink `Mesh.LinkFiles` in `pyLava.json`.
 
+   If interactive access to a suitable node is not available (e.g. when
+   working from a non-Pleiades host), generate the mesh as a batch job
+   instead: `qsub run_mesh.pbs` from `inputs/mesh/` submits the same mesher
+   run to a `rom_ait` node in queue `sls_aero1`.
+
 2. **Verify setup.** Run
 
        cape -I 0 --no-start
@@ -41,6 +46,8 @@ main CAPE file is `pyLava.json`. The basic flow is:
    LAVA-Unstructured binary), `RunControl.mpi.executable` and `nProc`,
    `RunControl.Environ.OMP_NUM_THREADS`, and the `PBS`/`ShellCmds` sections
    if running on a PBS system (set `RunControl.qsub: true` in that case).
+   On OpenMPI systems, keep `--bind-to none` in `RunControl.mpi.args` so
+   the OpenMP threads of each rank are not all pinned to one core.
 
 4. **Run.** Start both cases and enter the standard CAPE loop: `cape wait`,
    act on cases (`cape report`, check subfigures), extend if needed with

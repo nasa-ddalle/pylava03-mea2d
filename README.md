@@ -63,6 +63,19 @@ lavavoro.AVX2 ./voro_mea2d.yml
 cd ../..
 ```
 
+On Pleiades, you can instead generate the mesh as a batch job on a Rome
+node (interactive Rome access is only available from the Pleiades front
+ends, and not at all from other hosts):
+
+```bash
+cd inputs/mesh
+qsub run_mesh.pbs
+```
+
+`run_mesh.pbs` requests one full `rom_ait` node in the `sls_aero1`
+queue (the resources of `iqsub rom`); adjust the `-W group_list` if you
+charge to a different group.
+
 This creates `inputs/mesh/voro_mea2d.cgns`. (The provided
 `voro_mea2d.yml` produces a mesh coarser than required for mesh-insensitive
 results; reduce `reference_length` there if you want a finer mesh.)
@@ -106,13 +119,22 @@ Delete the `mea2d-lava01/` folder when done; the agent will recreate it.
 ### Settings you may have to change in `pyLava.json`
 
 - `RunControl.lavaunst.executable`: name/path of the unstructured solver
-  binary on your system (the tutorials use `lavaunst.3D.NS1`).
+  binary on your system (currently `lavaunst.3D.NS1.AVX2`, the Rome
+  build; Rome has no AVX-512).
 - `RunControl.mpi.executable` and `RunControl.nProc`: MPI launcher and
-  rank count; the tutorial uses `mpirun -np 2`.
+  rank count; the tutorial uses `mpirun -np 2`. The `mpi.args` include
+  `--bind-to none`: without it OpenMPI pins each rank to a single core
+  and the 32 OpenMP threads of each rank fight over that core.
 - `RunControl.Environ.OMP_NUM_THREADS`: threads per rank (32 in the
   tutorial, 64 cores total).
-- `PBS` and `ShellCmds`: queue resources and environment modules. For
-  queue submission also set `"qsub": true`.
+- `PBS` and `ShellCmds`: queue resources and environment modules. The
+  defaults target Pleiades Rome nodes: one `rom_ait` node (128 cores)
+  in queue `sls_aero1` with 8 h walltime and `group_list=e0847`
+  (compare `iqsub rom --dry-run`). `"qsub"` is `true`; set it to
+  `false` to run cases directly on the local host instead. `JumpHosts`
+  routes `qsub`/`qstat`/`qdel` over SSH (via `cfe02` to `pfe25`) when
+  working from a non-Pleiades host such as `cb10n08`; delete it when
+  working on a Pleiades front end.
 - `RunInputs`: anything here is copied into each case's `run.inputs`
   (currently used to write restart files every 400 steps instead of the
   template's 20000).
