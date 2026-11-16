@@ -102,7 +102,7 @@
         "Reports": ["case"],
         "Archive": true,
         "case": {
-            "Figures": ["Summary", "QuickHistory"],
+            "Figures": ["Summary", "QuickHistory", "FlowViz"],
             "Title": "LAVA-U Force, Moment, \\& Residual Report",
             "Subtitle": "pyLava example problem: multielement airfoil",
             "Author": "CAPE Development Team",
@@ -123,6 +123,11 @@
                     "L2"
                 ],
                 "Header": "Iterative histories",
+                "Alignment": "center"
+            },
+            "FlowViz": {
+                "Subfigures": ["p-xz", "p-xz-mesh"],
+                "Header": "Flow visualization",
                 "Alignment": "center"
             }
         },
@@ -182,6 +187,20 @@
                 "nPlotFirst": 1,
                 "FigureWidth": 5.5,
                 "FigureHeight": 4.2
+            },
+            "p-xz": {
+                "Type": "Tecplot",
+                "Layout": "inputs/p-xz.lay",
+                "Width": 0.85,
+                "FigWidth": 2400,
+                "Caption": "Pressure contours, $x$--$z$ plane"
+            },
+            "p-xz-mesh": {
+                "Type": "Tecplot",
+                "Layout": "inputs/p-xz-mesh.lay",
+                "Width": 0.85,
+                "FigWidth": 2400,
+                "Caption": "Mesh with pressure contours, $x$--$z$ plane"
             }
         }
     },

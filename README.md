@@ -166,6 +166,16 @@ A typical agentic session then proceeds as in the companion
    (`cape perform extend -I {CASE}`) and approves finished ones
    (`cape perform approve -I {CASE}`), which also extracts the DataBook.
 
+The `case` report includes two `Tecplot` subfigures rendered from
+`inputs/p-xz.lay` and `inputs/p-xz-mesh.lay` (pressure contours and mesh
+on the $x$-$z$ plane, read straight from `volume/Unst.volLatest.cgns`).
+Building the PDF on a Cabeus host therefore needs, in addition to the
+CAPE modules:
+
+    module load pkgsrc          # PDFLaTeX (fancyhdr & friends)
+    module load tecplot/2025r2  # batch tec360; 2023r2's CGNS loader is
+                                # too old for LAVA's CGNS 4.1.2 output
+
 ## Expected results
 
 Following the LAVA tutorial: the continuity residual (`l2resr0`) should
