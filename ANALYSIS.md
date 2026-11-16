@@ -62,7 +62,11 @@ main CAPE file is `pyLava.json`. The basic flow is:
 
 This is a steady RANS case. Per the LAVA tutorial, the continuity residual
 (`l2resr0`) should drop about 8 orders of magnitude within ~1500 iterations;
-the SA turbulence residual (`l2turbresr0`) stalls after ~3 orders.
+the SA turbulence residual (`l2turbresr0`) stalls after ~3 orders. Note the
+input's `convergence.relative tolerance = 1e-7` lets the solver exit early
+(at ~1000 iterations here); CAPE detects a solver-converged exit via
+`check_alt_exit()`, reduces the target iteration count, and the case goes
+straight to `DONE`/`PASS`.
 
 - Approve a case when the force/moment histories (CL, CD, CLM for `all`)
   are visually flat and the residuals are not growing.
